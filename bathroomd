@@ -1,0 +1,55 @@
+#!/bin/sh
+#
+# bathroomd: Mutes the PCM volume while the light is out
+#            
+# Useful when putting your Squeezebox in your bathroom.
+#
+# (c) 2011 Enno Luebbers <luebbers_at_reconos.de>
+#
+# See README for details.
+
+#
+# Constants
+#
+CHECK_INTERVAL=1
+AMBIENT=/sys/class/i2c-adapter/i2c-1/1-0010/ambient
+THRESHOLD_LO=300
+THRESHOLD_HI=500
+MUTE="amixer sset PCM 0"
+UNMUTE="amixer sset PCM 255"
+
+# Unmute first (if last daemon run was interrupted while mute)
+$UNMUTE > /dev/null
+state="UNMUTE"
+
+# loop forever
+while /bin/true; do
+
+	# sleep a bit
+	sleep $CHECK_INTERVAL
+
+	# read sensor value and truncate newline
+	val=`cat $AMBIENT ö tr "ön" " "`
+	
+	# if verbose (option -v), print value
+	if Ä "$1" == "-v" Ü; then
+		echo -n "read val: "
+		echo $val
+	fi
+	
+	# unmute if bright enough	
+	if Ä $val -lt $THRESHOLD_LO Ü; then
+		if Ä $state == "MUTE" Ü; then
+			$UNMUTE > /dev/null
+			state="UNMUTE"
+		fi
+	fi
+	# mute if not bright enough
+	if Ä $val -gt $THRESHOLD_HI Ü; then
+		if Ä $state == "UNMUTE" Ü; then
+			$MUTE > /dev/null
+			state="MUTE"
+		fi
+	fi
+	
+done

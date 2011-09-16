@@ -1,0 +1,78 @@
+bathroomd: Turn your Squeezebox off while the light is out
+
+Version 0.1                                                      16.09.2011
+
+(c) 2011 Enno Luebbers <luebbers_at_reconos.de>
+
+
+DISCLAIMER
+----------
+
+I don't provide any guarantees that the script works as intended and doesn't
+cause any damage to your Squeezebox. Use at your own risk.
+
+bathroomd has been tested with a Logitech Squeezebox Radio, firmware version
+7.6.1 r9482. Your mileage may vary with other devices and versions.
+
+
+SYNOPSIS
+--------
+
+The most annoying thing about putting your Squeezebox into your bathroom is
+the fact that you need to manually turn it on or off. Wouldn't it be awesome 
+if your Squeezebox turned itself on when you switch on the light in the
+bathroom, and turn off when your leave and switch off the light?
+
+Enter bathroomd, a hugely sophisticated quick hack which reads out your
+Squeezebox's ambient light sensor and mutes the playback volume when the
+ambient brightness falls below a certain threshold, as well as turning the
+volume back up when the brightness rises above a (second) threshold.
+
+
+INSTALLATION
+------------
+
+1. Copy the bathroomd script onto your Squeezebox using SSH, preferably into
+   the /usr/bin directory. You might need to enable SSH access first in your
+   Squeezebox's settings.
+   
+2. Add the following line to the end of  your Squeezebox's /etc/init.d/rcS
+   script:
+   
+        /usr/bin/bathroomd &
+        
+3. Edit the /usr/bin/bathroomd script to suit your needs. Especially the
+   constants THRESHOLD_HI and THRESHOLD_LO might need tweaking to account
+   for the particular brightness levels in your bathroom. You can run
+   bathroomd manually with the '-v' switch to see the data read from the
+   ambient light sensor.
+   
+   
+DEINSTALLATION
+--------------
+
+Just remove /usr/bin/bathroomd and the line added to /etc/init.d/rcS in step
+2 above. You can alternatively restore your Squeezebox to its factory 
+settings by holding the 'ADD' button when powering it on.
+
+
+KNOWN ISSUES
+------------
+
+bathroomd only mutes the PCM volume. This has the nice effect that it
+remembers the volume you set using the volume knob; it might however not
+work with line in or other audio sources.
+
+Because bathroomd only mutes the volume, playback continues even when you are
+not in the bathroom. This is neither energy efficient nor elegant; if anyone
+knows of a way to start/stop playback from the Squeezebox's command line, 
+please contact me.
+
+bathroomd doesn't do any error checking. It's just a hack.
+
+bathroomd periodically checks the ambient light sensor; this activity might
+be (in fact, it is) noticeable and cause some jitter in the interface. I
+haven't experienced any degradation in sound quality, though. You might want
+to increase the CHECK_INTERVAL (in seconds) if the lag bothers you.
+
+If you have a real window in your bathroom, this won't work.
