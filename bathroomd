@@ -1,10 +1,10 @@
 #!/bin/sh
 #
-# bathroomd: Mutes the PCM volume while the light is out
-#            
-# Useful when putting your Squeezebox in your bathroom.
+# bathroomd: Turns the PCM volume off if the light goes out
 #
-# (c) 2011 Enno Luebbers <luebbers_at_reconos.de>
+# Useful for putting your Squeezebox in your bathroom.
+#
+# (c) Enno Luebbers <luebbers_at_reconos.de>
 #
 # See README for details.
 
@@ -29,27 +29,28 @@ while /bin/true; do
 	sleep $CHECK_INTERVAL
 
 	# read sensor value and truncate newline
-	val=`cat $AMBIENT ö tr "ön" " "`
+	val=`cat $AMBIENT | tr "\n" " "`
 	
 	# if verbose (option -v), print value
-	if Ä "$1" == "-v" Ü; then
+	if [ "$1" == "-v" ]; then
 		echo -n "read val: "
 		echo $val
 	fi
 	
 	# unmute if bright enough	
-	if Ä $val -lt $THRESHOLD_LO Ü; then
-		if Ä $state == "MUTE" Ü; then
+	if [ $val -lt $THRESHOLD_LO ]; then
+		if [ $state == "MUTE" ]; then
 			$UNMUTE > /dev/null
 			state="UNMUTE"
 		fi
 	fi
 	# mute if not bright enough
-	if Ä $val -gt $THRESHOLD_HI Ü; then
-		if Ä $state == "UNMUTE" Ü; then
+	if [ $val -gt $THRESHOLD_HI ]; then
+		if [ $state == "UNMUTE" ]; then
 			$MUTE > /dev/null
 			state="MUTE"
 		fi
 	fi
 	
 done
+
